@@ -1,0 +1,15 @@
+spring:
+  main:
+    show_banner: false
+    searchEnginesNames: yandex,google
+  hadoop:
+    mainNodeIp: localhost
+    port: 9000
+    fsUri: hdfs://${spring.hadoop.mainNodeIp}:${spring.hadoop.port}
+    mapReduceInput: /user/root/input
+hbase:
+  zk:
+    host: ${spring.hadoop.mainNodeIp}
+    port: 2181
+  mapred:
+    outputtable: word
