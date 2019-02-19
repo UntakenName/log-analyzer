@@ -3,7 +3,6 @@ package net.thumbtack.analyzer.data;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.springframework.beans.factory.InitializingBean;
@@ -21,20 +20,22 @@ public class WordOccurrencesCountUtils implements InitializingBean {
 	private Admin admin;
 
 	public void initializeTable() throws IOException {
+		deleteTableIfExists();
 
-		TableName name = TableName.valueOf(WordOccurrencesCountRepository.TABLE_NAME);
-		if (admin.tableExists(name)) {
-			if (!admin.isTableDisabled(name)) {
-				admin.disableTable(name);
-			}
-			admin.deleteTable(name);
-		}
-
-		HTableDescriptor tableDescriptor = new HTableDescriptor(name);
+		HTableDescriptor tableDescriptor = new HTableDescriptor(WordOccurrencesCountRepository.TABLE_NAME_NATIVE_REPRESENTATION);
 		HColumnDescriptor columnDescriptor = new HColumnDescriptor(WordOccurrencesCountRepository.FAMILY_NAME_BYTES);
 		tableDescriptor.addFamily(columnDescriptor);
 
 		admin.createTable(tableDescriptor);
+	}
+
+	public void deleteTableIfExists() throws IOException {
+		if (admin.tableExists(WordOccurrencesCountRepository.TABLE_NAME_NATIVE_REPRESENTATION)) {
+			if (!admin.isTableDisabled(WordOccurrencesCountRepository.TABLE_NAME_NATIVE_REPRESENTATION)) {
+				admin.disableTable(WordOccurrencesCountRepository.TABLE_NAME_NATIVE_REPRESENTATION);
+			}
+			admin.deleteTable(WordOccurrencesCountRepository.TABLE_NAME_NATIVE_REPRESENTATION);
+		}
 	}
 
 	@Override

@@ -4,6 +4,14 @@ Log Analyser
 
 Implement map-reduce job for parsing web-server access log and counting all search requests.
 
+Overview
+=======================
+
+Test project aimed to widen my professional specialization with the following technologies:
+*Spring Boot
+*Apache Hadoop (+ HBase)
+*MapReduce
+
 
 Functional requirements
 =======================
@@ -24,6 +32,9 @@ A mapreduce job being launched at the application startup. It reads plain text f
 search engine queries in the input files and counts word occurrences in them if any are found.
 Results of the job are passed to hbase.
 
+0.2
+The job is refactored, tests are introduced.
+
 Configuration
 ========================
 
@@ -38,5 +49,5 @@ Launch
 
 In the root of the project type int the terminal
 
-1) mvn clean package
-2) java -jar target/log-analyzer-0.1-SNAPSHOT.jar
+1) mvn clean install
+2) java -jar target/log-analyzer.jar

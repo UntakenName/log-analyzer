@@ -15,7 +15,7 @@ import java.util.List;
 @SpringBootApplication
 public class LogAnalyzer {
 
-    private static final String CONTEXT_DESCRIPTION_PATH = "/META-INF/spring/application-context.xml";
+    public static final String CONTEXT_DESCRIPTION_PATH = "/META-INF/spring/application-context.xml";
 
     private static final Log log = LogFactory.getLog(LogAnalyzer.class);
 

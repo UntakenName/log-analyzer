@@ -1,15 +1,14 @@
 spring:
   main:
     show_banner: false
-    searchEnginesNames: yandex,google
   hadoop:
-    mainNodeIp: localhost
+    masterNodeIp: localhost
     port: 9000
-    fsUri: hdfs://${spring.hadoop.mainNodeIp}:${spring.hadoop.port}
+    fsUri: hdfs://${spring.hadoop.masterNodeIp}:${spring.hadoop.port}
     mapReduceInput: /user/root/input
 hbase:
   zk:
-    host: ${spring.hadoop.mainNodeIp}
+    host: ${spring.hadoop.masterNodeIp}
     port: 2181
   mapred:
     outputtable: word

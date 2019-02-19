@@ -16,27 +16,17 @@
 	<hdp:hbase-configuration id="hbaseConfiguration" configuration-ref="configuration"
 							 zk-quorum="${hbase.zk.host}" zk-port="${hbase.zk.port}"/>
 
-	<hdp:job id="countYandexSearchQueriesJob"
+	<hdp:job id="countSearchQueriesJob"
 			 configuration-ref="hbaseConfiguration"
 			 input-path="${spring.hadoop.mapReduceInput}"
 			 output-format="org.apache.hadoop.hbase.mapreduce.TableOutputFormat"
-			 mapper="net.thumbtack.analyzer.mapreduce.YandexSearchQueriesQuantityMapReduceJob.YandexQueriesMapper"
-			 reducer="net.thumbtack.analyzer.mapreduce.YandexSearchQueriesQuantityMapReduceJob.YandexQueriesReducer"
-			 jar-by-class="net.thumbtack.analyzer.mapreduce.YandexSearchQueriesQuantityMapReduceJob">
+			 mapper="net.thumbtack.analyzer.mapreduce.SearchQueriesQuantityMapReduceJob.LogContentMapper"
+			 reducer="net.thumbtack.analyzer.mapreduce.SearchQueriesQuantityMapReduceJob.LogContentReducer"
+			 jar-by-class="net.thumbtack.analyzer.mapreduce.SearchQueriesQuantityMapReduceJob">
 		hbase.mapred.outputtable=${hbase.mapred.outputtable}
 	</hdp:job>
 
-	<hdp:job id="countGoogleSearchQueriesJob"
-			 configuration-ref="hbaseConfiguration"
-			 input-path="${spring.hadoop.mapReduceInput}"
-			 output-format="org.apache.hadoop.hbase.mapreduce.TableOutputFormat"
-			 mapper="net.thumbtack.analyzer.mapreduce.GoogleSearchQueriesQuantityMapReduceJob.GoogleQueriesMapper"
-			 reducer="net.thumbtack.analyzer.mapreduce.GoogleSearchQueriesQuantityMapReduceJob.GoogleQueriesReducer"
-			 jar-by-class="net.thumbtack.analyzer.mapreduce.GoogleSearchQueriesQuantityMapReduceJob">
-		hbase.mapred.outputtable=${hbase.mapred.outputtable}
-	</hdp:job>
-
-	<hdp:job-runner id="countSearchQueriesJobRunner" job-ref="countGoogleSearchQueriesJob, countYandexSearchQueriesJob"/>
+	<hdp:job-runner id="countSearchQueriesJobRunner" job-ref="countSearchQueriesJob"/>
 
 	<bean id="hbaseTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate">
 		<property name="configuration" ref="hbaseConfiguration"/>
