@@ -16,7 +16,8 @@ Test project aimed to widen my professional specialization with the following te
 Functional requirements
 =======================
 
-* in every log string tries to detect search request to search engines (google, yandex) and extract search string
+* parses every file in the "spring.hadoop.mapReduceInput" address of the underlying HDFS specified in the properties
+* in every line tries to detect search request to search engines (google, yandex) and extract search string
   output results to HBase: search keyword -> GoogleCount: N, YandexCount: M, where N and M are number of occurrences
   of keyword in search strings
 * client-side application fetches some word and it’s neighbours (keywords which occur together in search queries)
@@ -34,6 +35,9 @@ Results of the job are passed to hbase.
 
 0.2
 The job is refactored, tests are introduced.
+
+0.3
+RestAPI for job launch and search neighbours select. Project is refactored after the DDD paradigm.
 
 Configuration
 ========================

@@ -1,6 +1,7 @@
-package net.thumbtack.analyzer.data;
+package net.thumbtack.analyzer.common;
 
-import net.thumbtack.analyzer.LogAnalyzer;
+import net.thumbtack.analyzer.neighbours.SearchNeighbours;
+import net.thumbtack.analyzer.occurrences.Occurrences;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -11,67 +12,94 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.data.hadoop.mapreduce.JobRunner;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.BufferedWriter;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(locations = LogAnalyzer.CONTEXT_DESCRIPTION_PATH)
-@IntegrationTest
-public class WriteReadTest {
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class WriteReadIntegrationTest {
 
     @Rule
     public ExpectedException expected = ExpectedException.none();
+
+    @Value("${spring.hadoop.mapReduceInput}")
+    private String inputFolderPath;
+
+    @Value("${spring.data.rest.launchJobs}")
+    private String launchJobsUri;
+
+    @Value("${spring.data.rest.neighbours}")
+    private String neighboursUri;
 
     @Autowired
     private Configuration configuration;
 
     @Autowired
-    private JobRunner countSearchQueriesJobRunner;
+    private HbaseRepository<Occurrences> occurrencesRepository;
 
     @Autowired
-    private HbaseRepository<WordOccurrencesCount> repository;
+    private HbaseRepository<SearchNeighbours> searchNeighboursRepositoryRepository;
 
     @Autowired
-    private WordOccurrencesCountUtils utils;
+    private List<HbaseTableUtils> utilsList;
+
+    @Autowired
+    private TestRestTemplate restTemplate;
 
     private FileSystem hdfs;
     private String randomKey;
     private Path fileNamePath;
+    private final String testString = "test";
 
     @Before
     public void initializeInputFileAndOutputTable() throws Exception {
         hdfs = FileSystem.get(configuration);
         randomKey = UUID.randomUUID().toString();
-        fileNamePath = new Path("/user/root/input/"+ randomKey + ".txt");
+        fileNamePath = new Path(inputFolderPath + "/"+ randomKey + ".txt");
         createInputFile();
-        utils.initializeTable();
+
+        for (HbaseTableUtils utils : utilsList) {
+            if (utils.ifTableExists()) {
+                utils.deleteTable();
+            }
+            utils.createTable();
+        }
     }
 
     @After
     public void deleteInputFileAndOutputTable() throws Exception {
         deleteInputFile();
-        utils.deleteTableIfExists();
+        for (HbaseTableUtils utils : utilsList) {
+            utils.deleteTable();
+        }
         hdfs.close();
     }
 
     @Test
-    public void doWriteReadTest() throws Exception {
-        countSearchQueriesJobRunner.call();
-        WordOccurrencesCount occurrence = repository.find(randomKey);
+    public void doWriteReadTest() {
+        restTemplate.getForEntity(launchJobsUri, ResponseEntity.class);
+
+        SearchNeighbours neighboursStatistics = restTemplate.getForEntity(neighboursUri + "?word={word}",
+                SearchNeighbours.class, randomKey).getBody();
+        assertNotNull("Failed to find a persisted object", neighboursStatistics);
+        List<String> neighbours = neighboursStatistics.getNeighbours();
+        assertNotNull("No response from the second endpoint", neighbours);
+        assertTrue("Wrong response", neighbours.size() == 1 && testString.equals(neighbours.get(0)));
+
+        Occurrences occurrence = occurrencesRepository.find(randomKey);
         assertNotNull("Failed to find a persisted object", occurrence);
-        assertEquals(occurrence.getWord(), randomKey);
+        assertEquals(randomKey, occurrence.getWord());
         Map<String, Integer> searchEngineByOccurrencesCountMap = occurrence.getSearchEngineByOccurrencesCountMap();
         Arrays.stream(SearchEngineParameters.values())
                 .forEach(searchEngineParameters -> {
@@ -79,8 +107,8 @@ public class WriteReadTest {
                     assertTrue("Response doesn't contain value for key: " + searchEngineName,
                             searchEngineByOccurrencesCountMap.containsKey(searchEngineName));
                     assertEquals("Response contains wrong number of occurrences for key: " + searchEngineName,
-                            searchEngineParameters.getSearchEngineSiteSignatures().size(),
-                            (int) searchEngineByOccurrencesCountMap.get(searchEngineName));
+                            (int) searchEngineByOccurrencesCountMap.get(searchEngineName),
+                            searchEngineParameters.getSearchEngineSiteSignatures().size());
                 }
         );
     }
@@ -97,6 +125,8 @@ public class WriteReadTest {
                     fileContent.append(siteSignature)
                             .append(searchEngineParameters.getQueryLineBeginning())
                             .append(randomKey)
+                            .append(searchEngineParameters.getQueryParamsDelimiter())
+                            .append(testString)
                             .append("\n");
                 })
         );

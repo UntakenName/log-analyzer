@@ -1,6 +1,6 @@
 package net.thumbtack.analyzer.mapreduce;
 
-import net.thumbtack.analyzer.data.SearchEngineParameters;
+import net.thumbtack.analyzer.common.SearchEngineParameters;
 
 public class LogSegmentParseResult {
 

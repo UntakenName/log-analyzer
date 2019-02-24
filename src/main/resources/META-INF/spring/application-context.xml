@@ -7,7 +7,7 @@
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/hadoop http://www.springframework.org/schema/hadoop/spring-hadoop.xsd">
 
-	<context:property-placeholder location="application.yml"/>
+	<context:property-placeholder location="classpath*:application.yml"/>
 
 	<context:component-scan base-package="net.thumbtack.analyzer"/>
 	
@@ -20,13 +20,23 @@
 			 configuration-ref="hbaseConfiguration"
 			 input-path="${spring.hadoop.mapReduceInput}"
 			 output-format="org.apache.hadoop.hbase.mapreduce.TableOutputFormat"
-			 mapper="net.thumbtack.analyzer.mapreduce.SearchQueriesQuantityMapReduceJob.LogContentMapper"
-			 reducer="net.thumbtack.analyzer.mapreduce.SearchQueriesQuantityMapReduceJob.LogContentReducer"
-			 jar-by-class="net.thumbtack.analyzer.mapreduce.SearchQueriesQuantityMapReduceJob">
-		hbase.mapred.outputtable=${hbase.mapred.outputtable}
+			 mapper="net.thumbtack.analyzer.occurrences.OccurrencesMapper"
+			 reducer="net.thumbtack.analyzer.occurrences.OccurrencesReducer"
+			 jar-by-class="net.thumbtack.analyzer.mapreduce.SearchQueriesMapReduceJob">
+		hbase.mapred.outputtable=${hbase.mapred.occurrencesTable}
 	</hdp:job>
 
-	<hdp:job-runner id="countSearchQueriesJobRunner" job-ref="countSearchQueriesJob"/>
+	<hdp:job id="findSearchNeighboursJob"
+			 configuration-ref="hbaseConfiguration"
+			 input-path="${spring.hadoop.mapReduceInput}"
+			 output-format="org.apache.hadoop.hbase.mapreduce.TableOutputFormat"
+			 mapper="net.thumbtack.analyzer.neighbours.SearchNeighboursMapper"
+			 reducer="net.thumbtack.analyzer.neighbours.SearchNeighboursReducer"
+			 jar-by-class="net.thumbtack.analyzer.mapreduce.SearchQueriesMapReduceJob">
+		hbase.mapred.outputtable=${hbase.mapred.neighboursTable}
+	</hdp:job>
+
+	<hdp:job-runner id="searchQueriesJobRunner" job-ref="countSearchQueriesJob,findSearchNeighboursJob"/>
 
 	<bean id="hbaseTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate">
 		<property name="configuration" ref="hbaseConfiguration"/>

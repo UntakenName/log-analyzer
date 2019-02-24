@@ -1,5 +1,6 @@
-package net.thumbtack.analyzer.data;
+package net.thumbtack.analyzer.common;
 
+import org.apache.hadoop.hbase.client.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.hadoop.hbase.HbaseTemplate;
 import org.springframework.data.hadoop.hbase.RowMapper;
@@ -27,5 +28,15 @@ public abstract class HbaseRepository<OBJECT_TYPE> {
 
     protected abstract String getTableName();
 
-    protected abstract RowMapper<OBJECT_TYPE> getRowMapper();
+    private RowMapper<OBJECT_TYPE> getRowMapper() {
+        return (result, rowNum) -> {
+            if (result.rawCells().length == 0) {
+                return null;
+            } else {
+                return mapResults(result, rowNum);
+            }
+        };
+    }
+
+    protected abstract OBJECT_TYPE mapResults(Result result, int rowNum);
 }

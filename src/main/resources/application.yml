@@ -1,6 +1,10 @@
 spring:
   main:
     show_banner: false
+  data:
+    rest:
+      launchJobs: /launchSearchQueriesJob
+      neighbours: /wordNeighbours
   hadoop:
     masterNodeIp: localhost
     port: 9000
@@ -11,4 +15,5 @@ hbase:
     host: ${spring.hadoop.masterNodeIp}
     port: 2181
   mapred:
-    outputtable: word
+    occurrencesTable: word
+    neighboursTable: neighbours

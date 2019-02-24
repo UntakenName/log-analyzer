@@ -1,4 +1,4 @@
-package net.thumbtack.analyzer.data;
+package net.thumbtack.analyzer.common;
 
 import java.util.Arrays;
 import java.util.Collections;
