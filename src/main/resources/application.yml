@@ -5,6 +5,7 @@ spring:
     rest:
       launchJobs: /launchSearchQueriesJob
       neighbours: /wordNeighbours
+      words: /words
   hadoop:
     masterNodeIp: localhost
     port: 9000

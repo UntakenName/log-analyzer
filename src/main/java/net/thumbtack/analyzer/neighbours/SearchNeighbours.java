@@ -26,7 +26,7 @@ public class SearchNeighbours extends WordStatistics {
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder(super.toString());
+		StringBuilder result = new StringBuilder(getWord() == null ? "" : super.toString());
 		if (neighbours != null && !neighbours.isEmpty()) {
 			result.append(" ").append(neighbours);
 		}

@@ -42,6 +42,9 @@ public class WriteReadIntegrationTest {
     @Value("${spring.data.rest.neighbours}")
     private String neighboursUri;
 
+    @Value("${spring.data.rest.words}")
+    private String wordsUri;
+
     @Autowired
     private Configuration configuration;
 
@@ -92,13 +95,13 @@ public class WriteReadIntegrationTest {
 
         SearchNeighbours neighboursStatistics = restTemplate.getForEntity(neighboursUri + "?word={word}",
                 SearchNeighbours.class, randomKey).getBody();
-        assertNotNull("Failed to find a persisted object", neighboursStatistics);
+        assertNotNull("Failed to find a persisted search neighbour", neighboursStatistics);
         List<String> neighbours = neighboursStatistics.getNeighbours();
-        assertNotNull("No response from the second endpoint", neighbours);
+        assertNotNull("No response from the neighbors endpoint", neighbours);
         assertTrue("Wrong response", neighbours.size() == 1 && testString.equals(neighbours.get(0)));
 
         Occurrences occurrence = occurrencesRepository.find(randomKey);
-        assertNotNull("Failed to find a persisted object", occurrence);
+        assertNotNull("Failed to find a persisted occurrence", occurrence);
         assertEquals(randomKey, occurrence.getWord());
         Map<String, Integer> searchEngineByOccurrencesCountMap = occurrence.getSearchEngineByOccurrencesCountMap();
         Arrays.stream(SearchEngineParameters.values())
@@ -111,6 +114,9 @@ public class WriteReadIntegrationTest {
                             searchEngineParameters.getSearchEngineSiteSignatures().size());
                 }
         );
+
+        List occurrencesList = restTemplate.getForObject(wordsUri, List.class);
+        assertNotNull("Failed to find persisted word occurrences", occurrencesList);
     }
 
     private void createInputFile() throws Exception {

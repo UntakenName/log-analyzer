@@ -26,7 +26,7 @@ public class Occurrences extends WordStatistics {
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder(super.toString());
+		StringBuilder result = new StringBuilder(getWord() == null ? "" : super.toString());
 		if (searchEngineByOccurrencesCountMap != null && !searchEngineByOccurrencesCountMap.isEmpty()) {
 			result.append(" : ").append(searchEngineByOccurrencesCountMap.toString());
 		}

@@ -1,4 +1,4 @@
-Log Analyser
+Log Analyzer
 ============
 
 
@@ -38,6 +38,9 @@ The job is refactored, tests are introduced.
 
 0.3
 RestAPI for job launch and search neighbours select. Project is refactored after the DDD paradigm.
+
+0.4
+RestAPI upgraded, a simple js-client is introduced.
 
 Configuration
 ========================

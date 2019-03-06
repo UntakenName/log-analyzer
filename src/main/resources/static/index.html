@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Log Analyzer</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+        <link type="text/css" href="css/base.css" rel="stylesheet" />
+        <link type="text/css" href="css/Spacetree.css" rel="stylesheet" />
+
+        <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jit/2.0.2/jit.js"></script>
+
+        <!--[if IE]><script language="javascript"
+                            type="text/javascript"
+                            src="https://cdnjs.cloudflare.com/ajax/libs/jit/2.0.2/Extras/excanvas.js"></script>
+        <![endif]-->
+
+        <script type="text/javascript" src="js/buttonClickBindings.js"></script>
+        <script type="text/javascript" src="js/buildNeighboursTree.js"></script>
+    </head>
+    <body onload="initNeighboursTree();">
+        <div id="container">
+
+            <div id="left-container">
+                <table>
+                    <tr>
+                        <td colspan="2">
+                            <input id="analyzeButton" type="button" value="Analyze logs">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="textInput">Search neighbours for: </label>
+                        </td>
+                        <td>
+                            <input type="text" id="textInput" name="textInput"/>
+                            <input id="searchButton" type="button" value="Show">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="center-container">
+                <div id="treeContainer"></div>
+            </div>
+        </div>
+    </body>
+</html>
