@@ -9,7 +9,7 @@ $(document).ready(function() {
     $("#searchButton").click(function() {
         var keyWord = document.getElementById('textInput').value;
         if (keyWord && keyWord.length > 0) {
-            recompileNeighboursTree(keyWord, treeInstance);
+            recompileNeighboursTree(keyWord);
         }
     });
 });

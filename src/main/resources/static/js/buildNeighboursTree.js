@@ -13,7 +13,7 @@ var labelType, useGradients, nativeTextSupport, animate, treeInstance;
     animate = !(iStuff || !nativeCanvasSupport);
 })();
 
-function recompileNeighboursTree(keyWord, treeInstance) {
+function recompileNeighboursTree(keyWord) {
     $.ajax({
         url: "/wordNeighbours",
         type: 'GET',
@@ -83,7 +83,7 @@ function initNeighboursTree() {
             label.id = node.id;            
             label.innerHTML = node.name;
             label.onclick = function() {
-                recompileNeighboursTree(node.id, treeInstance);
+                recompileNeighboursTree(node.id);
             };
             var style = label.style;
             style.width = 60 + 'px';
